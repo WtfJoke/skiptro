@@ -1,0 +1,39 @@
+Audio-Format rausfinden:
+ffprobe file1.mkv --> Stream #0:1(ger): Audio: aac (LC), 48000 Hz, stereo, fltp (default)
+
+Audio extrahieren:
+ffmpeg -i file1.mkv -vn -acodec copy file1.aac
+
+10min audio extrahieren:
+ffmpeg -i file1.mkv -vn -acodec copy -ss 0 -t 600 file1.aac
+
+10min audio in wav
+ffmpeg -i file1.mkv -vn -ss 0 -t 600 file1.wav
+
+
+
+Audio-Codec
+ffprobe -v error -show_entries stream=codec_name,codec_type -of json file1.mkv
+
+
+
+Interessanter artikel - https://willdrevo.com/fingerprinting-and-audio-recognition-with-python/
+Fingerprinting komplette staffel - reduktion anzahl möglichen matches von fingerprints
+
+
+ffmpeg heavy lifting audio encoden ohne zu wissen welcher codec
+https://gist.github.com/protrolium/e0dbd4bb0f1a396fcb55
+
+
+Waveform bild
+ffmpeg -i file1.aac -filter_complex "showwavespic=s=640x120" -frames:v 1 file1.png
+
+https://trac.ffmpeg.org/wiki/Waveform
+https://lukaprincic.si/development-log/ffmpeg-audio-visualization-tricks
+
+
+waveform daten
+ffmpeg -i file1.aac -ac 1 -filter:a aresample=8000 -map 0:a -c:a pcm_s16le -f data - > file1.aac.bin
+
+
+ffmpeg -i file1.aac -ac 1 -filter:a aresample=8000 -map 0:a -c:a pcm_s16le -f data - | gnuplot -p -e "plot '<cat' binary filetype=bin format='%int16' endian=little array=1:0 with lines;"
